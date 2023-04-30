@@ -17,34 +17,9 @@ struct no *cria_no(int chave){
 	return n;
 }
 
-int altura (struct no *no) {
-    int alt_e, alt_d;
-    if (no == NULL) 
-        return -1;
-    alt_e = altura (no->esq);
-    alt_d  = altura (no->dir);
-    if (alt_e  > alt_d)
-        return alt_e+1;
-    else
-        return alt_d+1; 
+void destroi_no(struct no *n){
+    return;
 }
-
-int nivelNo(struct no* raiz, int chave){
-    int nivel = -1; 
-    if (!raiz)
-        return -1;
-    if ((raiz->chave == chave) || (nivel = nivelNo(raiz->esq, chave)) >= 0 || (nivel = nivelNo(raiz->dir, chave)) >= 0)
-        return nivel + 1;
-    return nivel;
-}
-
-/*void destroi_no(struct no *n){
-	if(n == NULL)
-		return;
-	destroi_no(n->esq);
-	free(n);
-	destroi_no(n->dir);
-}*/
 
 void imprime_arvore(struct no *n, int esp){
 	if(n == NULL)
@@ -61,80 +36,30 @@ void imprime_arvore(struct no *n, int esp){
 	imprime_arvore(n->esq, esp);
 }
 
-struct no *binary(struct no *n, int chave){//um inclui na folha, na realidade
-//	if(n == NULL){
-//		n = cria_no(chave);
-//		return n;
-//	}
-	if(n->chave > chave){
-		if(n->esq == NULL){
-			n->esq = cria_no(chave);
-			n->esq->pai = n;
-			return n->esq;//?
-		}
-		return binary(n->esq, chave);
-	}
-	else if(n->chave < chave){
-		if(n->dir == NULL){
-			n->dir = cria_no(chave);
-			n->dir->pai = n;
-			return n->dir;//
-		}
-		return binary(n->dir, chave);
-	}
-	return n;
+int altura_no(struct no *n){
+    int alt_esq, alt_dir;
+    if(n == NULL) 
+        return -1;
+    alt_esq = altura_no(n->esq);
+    alt_dir = altura_no(n->dir);
+    if (alt_esq > alt_dir)
+        return alt_esq + 1;
+    return alt_dir + 1; 
+}
+
+int nivel_no(struct no* raiz, int chave){
+    int nivel = -1; 
+    if (!raiz)
+        return -1;
+    if ((raiz->chave == chave) || (nivel = nivel_no(raiz->esq, chave)) >= 0 || (nivel = nivel_no(raiz->dir, chave)) >= 0)
+        return nivel + 1;
+    return nivel;
 }
 
 int size(struct no *n){
 	if(n == NULL)
 		return 0;
 	return size(n->esq)+size(n->dir)+1;
-}
-
-void emordem(struct no *n, struct no *raiz){
-	if(n == NULL)
-		return;
-	emordem(n->esq, raiz);
-	printf("%d,%d\n", n->chave, nivelNo(raiz, n->chave));
-	emordem(n->dir, raiz);
-}
-
-struct no *rot_esq(struct no *n){
-	struct no *y = n->dir;
-	n->dir = y->esq;
-	y->pai = n->pai;
-	n->pai = y;
-
-	if(y->esq != NULL)
-		y->esq->pai = n;
-
-	//if(n->pai == NULL)
-	//	T.raiz = y;
-	//if(n == n->pai->esq)
-	//	n->pai->esq = y;
-	//else
-	//	n->pai->dir = y;
-	y->esq = n;
-	return y;
-}
-
-struct no *rot_dir(struct no *n){
-	struct no *y = n->esq;
-	n->esq = y->dir;
-	y->pai = n->pai;
-	n->pai = y;
-
-	if(y->dir != NULL)
-		y->dir->pai = n;
-
-	//if(n->pai == NULL)
-	//	T.raiz = y;
-	//if(n == n->pai->esq)
-	//	n->pai->esq = y;
-	//else
-	//	n->pai->dir = y;
-	y->dir = n;
-	return y;
 }
 
 struct no *busca(struct no *n, int chave){
@@ -147,22 +72,71 @@ struct no *busca(struct no *n, int chave){
 	return busca(n->dir, chave);
 }
 
-struct no* inclui_raiz(struct no *n, int chave){
+struct no *rot_esq(struct no *n){
+	struct no *y = n->dir;
+    n->dir = y->esq;
+	y->pai = n->pai;
+	n->pai = y;
+
+	if(y->esq != NULL)
+		y->esq->pai = n;
+	y->esq = n;
+	return y;
+}
+
+struct no *rot_dir(struct no *n){
+	struct no *y = n->esq;
+	n->esq = y->dir;
+	y->pai = n->pai;
+	n->pai = y;
+
+	if(y->dir != NULL)
+		y->dir->pai = n;
+	
+	y->dir = n;
+	return y;
+}
+
+struct no *inclui_folha(struct no *n, int chave){
 	if(n == NULL){
 		n = cria_no(chave);
 		return n;
 	}
-	if(chave < n->chave){
-		n->esq = inclui_raiz(n->esq, chave);
-		n->esq->pai = n;
-		n = rot_dir(n);
-	}else{
-		n->dir = inclui_raiz(n->esq, chave);
-		n->dir->pai = n;
-		n = rot_esq(n);
+	if(n->chave > chave){
+		if(n->esq == NULL){
+			n->esq = cria_no(chave);
+			n->esq->pai = n;
+			return n->esq;
+		}
+		return inclui_folha(n->esq, chave);
 	}
-	
+	else if(n->chave < chave){
+		if(n->dir == NULL){
+			n->dir = cria_no(chave);
+			n->dir->pai = n;
+			return n->dir;
+			}
+		return inclui_folha(n->dir, chave);
+	}
 	return n;
+}
+struct no* inclui_raiz(struct no *n, int chave){
+    if(n == NULL){
+		n = cria_no(chave);
+		return n;
+	}
+   if(chave < n->chave){
+	    n->esq = inclui_raiz(n->esq, chave);
+	    n->esq->pai = n;
+	    n = rot_dir(n);
+	    return n;
+    }       
+	else{//(chave > n->chave)
+	    n->dir = inclui_raiz(n->dir, chave);
+	    n->dir->pai = n;
+        n = rot_esq(n);
+	    return n;
+	}
 }
 
 struct no *min (struct no *no){
@@ -204,20 +178,27 @@ struct no *exclui (struct no *raiz, int chave){
     return nRaiz;
 }
 
+
+void emordem(struct no *n, struct no *raiz){
+	if(n == NULL)
+		return;
+	emordem(n->esq, raiz);
+	printf("%d,%d\n", n->chave, nivel_no(raiz, n->chave));
+	emordem(n->dir, raiz);
+}
+
 int main(){
-	struct no *n = cria_no(12);
-	binary(n, 5);
-	binary(n, 10);
-	binary(n, 11);
-	binary(n, 4);
-	binary(n, 2);
-	binary(n, 6);
+	struct no *n = inclui_folha(n, 8);
+	inclui_folha(n, 3);
+	inclui_folha(n, 10);
+	inclui_folha(n, 1);
+	inclui_folha(n, 9);
+	inclui_folha(n, 14);
 	imprime_arvore(n, 0);
 	emordem(n, n);
 	printf("\n");
-	//n = rot_dir(n);
-	//imprime_arvore(n, 0);
-	//emordem(n);
-	//destroi_no(n);
-	return 0;
+	inclui_raiz(n, 6);
+	imprime_arvore(n, 0);
+	emordem(n, n);
+	return 0
 }
