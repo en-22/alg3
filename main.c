@@ -3,6 +3,7 @@
 
 struct no{
 	int chave;
+	int altura;
 	struct no *esq, *dir, *pai;
 };
 
@@ -11,22 +12,21 @@ struct no *cria_no(int chave){
 	if(!(n = malloc(sizeof(struct no))))
 		return NULL;
 	n->chave = chave;
+	n->altura = 0;
 	n->esq = NULL;
 	n->dir = NULL;
 	n->pai = NULL;
 	return n;
 }
 
-int altura (struct no *no) {
-    int alt_e, alt_d;
-    if (no == NULL) 
+int altura (struct no *no){
+    if (!no)
         return -1;
-    alt_e = altura (no->esq);
-    alt_d  = altura (no->dir);
-    if (alt_e  > alt_d)
-        return alt_e+1;
-    else
-        return alt_d+1; 
+    return no->altura;
+}
+
+int maior (int a, int b){
+    return (a > b)? a : b;
 }
 
 int nivelNo(struct no* raiz, int chave){
@@ -61,28 +61,10 @@ void imprime_arvore(struct no *n, int esp){
 	imprime_arvore(n->esq, esp);
 }
 
-struct no *binary(struct no *n, int chave){//um inclui na folha, na realidade
-//	if(n == NULL){
-//		n = cria_no(chave);
-//		return n;
-//	}
-	if(n->chave > chave){
-		if(n->esq == NULL){
-			n->esq = cria_no(chave);
-			n->esq->pai = n;
-			return n->esq;//?
-		}
-		return binary(n->esq, chave);
-	}
-	else if(n->chave < chave){
-		if(n->dir == NULL){
-			n->dir = cria_no(chave);
-			n->dir->pai = n;
-			return n->dir;//
-		}
-		return binary(n->dir, chave);
-	}
-	return n;
+int fatorDeBalanceamento (struct no *no){
+    if (!no)
+        return 0;
+    return altura(no->esq) - altura(no->dir);
 }
 
 int size(struct no *n){
@@ -95,7 +77,7 @@ void emordem(struct no *n, struct no *raiz){
 	if(n == NULL)
 		return;
 	emordem(n->esq, raiz);
-	printf("%d,%d\n", n->chave, nivelNo(raiz, n->chave));
+	printf("%d,%d,%d\n", n->chave, nivelNo(raiz, n->chave), n->altura);
 	emordem(n->dir, raiz);
 }
 
@@ -115,6 +97,8 @@ struct no *rot_esq(struct no *n){
 	//else
 	//	n->pai->dir = y;
 	y->esq = n;
+	n->altura = maior(altura(n->esq), altura(n->dir)) + 1;
+	y->altura = maior(altura(y->esq), altura(y->dir)) + 1;
 	return y;
 }
 
@@ -133,8 +117,20 @@ struct no *rot_dir(struct no *n){
 	//	n->pai->esq = y;
 	//else
 	//	n->pai->dir = y;
+	n->altura = maior(altura(n->esq), altura(n->dir)) + 1;
+	y->altura = maior(altura(y->esq), altura(y->dir)) + 1;
 	y->dir = n;
 	return y;
+}
+
+struct no *rot_esq_dir(struct no *n){
+    n->esq = rot_esq(n->esq);
+    return rot_dir(n);
+}
+
+struct no *rot_dir_esq(struct no *n){
+    n->dir = rot_dir(n->dir);
+    return rot_esq(n);
 }
 
 struct no *busca(struct no *n, int chave){
@@ -182,9 +178,59 @@ void ajustaPai (struct no *no, struct no *novo){
     }
 }
 
+struct no *balanceia (struct no *n){
+    int fator = fatorDeBalanceamento (n);
+    printf ("Tome\n");
+    if (fator < -1){
+        if (fatorDeBalanceamento (n->dir) <= 0)
+            n = rot_esq(n);
+        else
+            n = rot_dir_esq(n);
+    }
+    else if (fator > 1){
+        if (fatorDeBalanceamento (n->esq) >= 0)
+            n = rot_dir(n);
+        else
+            n = rot_esq_dir(n);
+    }
+    return n;
+}
+
+struct no *binary(struct no *n, int chave){//um inclui na folha, na realidade
+//	if(n == NULL){
+//		n = cria_no(chave);
+//		return n;
+//	}
+	if(n->chave > chave){
+		if(n->esq == NULL){
+			n->esq = cria_no(chave);
+			n->esq->pai = n;
+			n->altura = maior(altura(n->esq), altura(n->dir)) + 1;
+	        n = balanceia(n);
+			return n->esq;//?
+		}
+		return binary(n->esq, chave);
+	}
+	else if(n->chave < chave){
+		if(n->dir == NULL){
+			n->dir = cria_no(chave);
+			n->dir->pai = n;
+			n->altura = maior(altura(n->esq), altura(n->dir)) + 1;
+	        n = balanceia(n);
+			return n->dir;//
+		}
+		return binary(n->dir, chave);
+	}
+	n->altura = maior(altura(n->esq), altura(n->dir)) + 1;
+	n = balanceia(n);
+	return n;
+}
+
 struct no *exclui (struct no *raiz, int chave){
     struct no *sucessor, *no, *nRaiz = raiz;
     no = busca(raiz, chave);
+    if (!no || !raiz)
+        return NULL;
     if (!no->esq)
         ajustaPai(no, no->dir);
     else{
@@ -201,6 +247,8 @@ struct no *exclui (struct no *raiz, int chave){
         }
     }
     free (no);
+    nRaiz->altura = maior(altura(nRaiz->esq), altura(nRaiz->dir)) + 1;
+    nRaiz = balanceia(nRaiz);
     return nRaiz;
 }
 
