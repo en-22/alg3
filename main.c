@@ -33,25 +33,10 @@ int altura(struct no *no){
     return no->altura;
 }
 
-int nivelNo(struct no* raiz, int chave){
-    int nivel = -1; 
-    if (!raiz)
-        return -1;
-    if ((raiz->chave == chave) || (nivel = nivelNo(raiz->esq, chave)) >= 0 || (nivel = nivelNo(raiz->dir, chave)) >= 0)
-        return nivel + 1;
-    return nivel;
-}
-
 int fatorDeBalanceamento (struct no *no){
     if (!no)
         return 0;
     return (altura(no->dir) - altura(no->esq));
-}
-
-int size(struct no *n){
-	if(n == NULL)
-		return 0;
-	return size(n->esq)+size(n->dir)+1;
 }
 
 struct no *rot_esq(struct no *n){
@@ -84,16 +69,6 @@ struct no *rot_dir(struct no *n){
 	y->altura = maior(altura(y->esq), altura(y->dir)) + 1;
 
 	return y;
-}
-
-struct no *busca(struct no *n, int chave){
-	if(!n)
-		return NULL;
-	if(chave == n->chave)
-		return n;
-	if(chave < n->chave)
-		return busca(n->esq, chave);
-	return busca(n->dir, chave);
 }
 
 struct no *max (struct no *no){
@@ -141,12 +116,12 @@ struct no *inclui_folha(struct no *n, int chave){
 		return n;
 	}
 	if(n->chave > chave){
-			n->esq = inclui_folha (n->esq, chave);
-			n->esq->pai = n;
+		n->esq = inclui_folha (n->esq, chave);
+		n->esq->pai = n;
 	}
 	else if(n->chave < chave){
-		    n->dir = inclui_folha (n->dir, chave);
-			n->dir->pai = n;
+		n->dir = inclui_folha (n->dir, chave);
+		n->dir->pai = n;
 	}
 	n->altura = maior(altura(n->esq), altura(n->dir)) + 1;
 	n = balanceia(n);
@@ -154,7 +129,7 @@ struct no *inclui_folha(struct no *n, int chave){
 }
 
 /******************************************Exclusao********************************************/
-struct no *exclui (struct no *raiz, int chave){
+/*struct no *exclui (struct no *raiz, int chave){
     struct no *ant, *no, *nRaiz = raiz;
     no = busca(raiz, chave);
     if (!no || !raiz)
@@ -178,6 +153,40 @@ struct no *exclui (struct no *raiz, int chave){
     nRaiz->altura = maior(altura(nRaiz->esq), altura(nRaiz->dir)) + 1;
     nRaiz = balanceia(nRaiz);
     return nRaiz;
+}*/
+
+struct no *exclui (struct no *n, int chave){
+	if (!n)
+		return NULL;
+	if (n->chave == chave){
+		if (!n->esq || !n->dir){
+			free (n);
+			return NULL;
+		}
+		else if (n->esq || n->dir){
+			struct no *ant = max(n->esq); //Remove pelo antecessor
+			n->chave = ant->chave;
+			ant->chave = chave; //Joga a chave para a folha, para tornar mais fácil a remoção
+			n->esq = exclui (n->esq, chave);
+			return n;
+		}
+		else{
+			struct no *aux;
+			if (!n->dir)
+				aux = n->esq;
+			else
+				aux = n->dir;
+			free (n);
+			return aux;
+		}
+	}
+	else if (n->chave > chave)
+		n->esq = exclui (n->esq, chave);
+	else
+		n->dir = exclui (n->dir, chave);
+	n->altura = maior (altura(n->esq), altura(n->dir)) + 1;
+	n = balanceia(n);
+	return (n);
 }
 
 /******************************************Impressao********************************************/
@@ -200,7 +209,7 @@ void emordem(struct no *n, struct no *raiz){
 	if(n == NULL)
 		return;
 	emordem(n->esq, raiz);
-	printf("%d,%d, %d\n", n->chave, nivelNo(raiz, n->chave), altura(n));
+	printf("%d,%d\n", n->chave, altura(raiz) - altura(n));
 	emordem(n->dir, raiz);
 }
 /******************************************Main********************************************/
@@ -208,7 +217,7 @@ int main(){
 	struct no *n = NULL;
 	char opcao;
 	int chave;
-	/*while (!feof(stdin)){
+	while (!feof(stdin)){
 		scanf("%c %d", &opcao, &chave);
 		switch (opcao){
 			case 'i':
@@ -218,21 +227,7 @@ int main(){
 				n = exclui (n, chave);
 			break;
 		}
-	}*/
-	n = inclui_folha (n, 10);
-	n = inclui_folha (n, 20);
-	n = inclui_folha (n, 30);
-	n = inclui_folha (n, 40);
-	n = inclui_folha (n, 50);
-	n = inclui_folha (n, 45);
-	n = inclui_folha (n, 48);
-	n = exclui (n, 40);
-	n = inclui_folha (n, 5);
-	n = inclui_folha (n, 4);
-	n = inclui_folha (n, 3);
-	n = exclui (n, 50);
-	n = exclui (n, 45);
-	imprime_arvore(n,0);
+	}
 	emordem (n, n);
 	return 0;
 }
