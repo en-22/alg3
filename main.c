@@ -218,7 +218,7 @@ int main(){
 	char opcao;
 	int chave;
 	while (!feof(stdin)){
-		scanf("%c %d", &opcao, &chave);
+		scanf(" %c %d", &opcao, &chave);
 		switch (opcao){
 			case 'i':
 				n = inclui_folha (n, chave);
@@ -226,6 +226,9 @@ int main(){
 			case 'r':
 				n = exclui (n, chave);
 			break;
+			default:
+				fprintf (stderr, "Argumento inválido\n");
+				exit(1);
 		}
 	}
 	emordem (n, n);
