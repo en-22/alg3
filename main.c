@@ -7,6 +7,7 @@ struct no{
 	struct no *esq, *dir, *pai;
 };
 
+
 struct no *cria_no(int chave){
 	struct no *n;
 	if(!(n = malloc(sizeof(struct no))))
@@ -19,13 +20,22 @@ struct no *cria_no(int chave){
 	return n;
 }
 
-void destroi_no(struct no *n){
-	return;
+
+int nivelNo(struct no* raiz, int chave){
+    int nivel = -1; 
+    if (!raiz)
+        return -1;
+    if ((raiz->chave == chave) || (nivel = nivelNo(raiz->esq, chave)) >= 0 || (nivel = nivelNo(raiz->dir, chave)) >= 0)
+        return nivel + 1;
+    return nivel;
 }
+
+
 /******************************************Auxiliares********************************************/
 int maior (int a, int b){
     return (a > b)? a : b;
 }
+
 
 int altura(struct no *no){
     if (!no)
@@ -33,11 +43,13 @@ int altura(struct no *no){
     return no->altura;
 }
 
+
 int fatorDeBalanceamento (struct no *no){
     if (!no)
         return 0;
     return (altura(no->dir) - altura(no->esq));
 }
+
 
 struct no *rot_esq(struct no *n){
 	struct no *y = n->dir;
@@ -45,21 +57,26 @@ struct no *rot_esq(struct no *n){
 	y->pai = n->pai;
 	n->pai = y;
 
+
 	if(y->esq != NULL)
 		y->esq->pai = n;
 	y->esq = n;
 
+
 	n->altura = maior(altura(n->esq), altura(n->dir)) + 1;
 	y->altura = maior(altura(y->esq), altura(y->dir)) + 1;
 
+
 	return y;
 }
+
 
 struct no *rot_dir(struct no *n){
 	struct no *y = n->esq;
 	n->esq = y->dir;
 	y->pai = n->pai;
 	n->pai = y;
+
 
 	if(y->dir != NULL)
 		y->dir->pai = n;
@@ -68,14 +85,17 @@ struct no *rot_dir(struct no *n){
 	n->altura = maior(altura(n->esq), altura(n->dir)) + 1;
 	y->altura = maior(altura(y->esq), altura(y->dir)) + 1;
 
+
 	return y;
 }
+
 
 struct no *max (struct no *no){
     if (!no->dir)
         return no;
     return max(no->dir);
 }
+
 
 void ajustaPai (struct no *no, struct no *novo){
     if (no->pai){
@@ -90,6 +110,7 @@ void ajustaPai (struct no *no, struct no *novo){
 /******************************************Balanceamento********************************************/
 struct no *balanceia (struct no *n){
     int fator = fatorDeBalanceamento (n);
+
 
     if (fator < -1){
         if (fatorDeBalanceamento (n->esq) >= 0){
@@ -128,42 +149,16 @@ struct no *inclui_folha(struct no *n, int chave){
 	return n;
 }
 
-/******************************************Exclusao********************************************/
-/*struct no *exclui (struct no *raiz, int chave){
-    struct no *ant, *no, *nRaiz = raiz;
-    no = busca(raiz, chave);
-    if (!no || !raiz)
-        return NULL;
-    if (!no->esq)
-        ajustaPai(no, no->dir);
-    else{
-        if (!no->dir)
-            ajustaPai (no, no->esq);
-        else{
-            ant = max(no->esq);
-            ajustaPai(ant, ant->esq);
-            ant->esq = no->esq;
-            ant->dir = no->dir;
-            ajustaPai (no, ant);
-            if (no == raiz)
-                nRaiz = ant;
-        }
-    }
-    free (no);
-    nRaiz->altura = maior(altura(nRaiz->esq), altura(nRaiz->dir)) + 1;
-    nRaiz = balanceia(nRaiz);
-    return nRaiz;
-}*/
 
 struct no *exclui (struct no *n, int chave){
 	if (!n)
 		return NULL;
 	if (n->chave == chave){
-		if (!n->esq || !n->dir){
+		if (!n->esq && !n->dir){
 			free (n);
 			return NULL;
 		}
-		else if (n->esq || n->dir){
+		else if (n->esq && n->dir){
 			struct no *ant = max(n->esq); //Remove pelo antecessor
 			n->chave = ant->chave;
 			ant->chave = chave; //Joga a chave para a folha, para tornar mais fácil a remoção
@@ -189,6 +184,7 @@ struct no *exclui (struct no *n, int chave){
 	return (n);
 }
 
+
 /******************************************Impressao********************************************/
 void imprime_arvore(struct no *n, int esp){
 	if(n == NULL)
@@ -205,13 +201,25 @@ void imprime_arvore(struct no *n, int esp){
 	imprime_arvore(n->esq, esp);
 }
 
+
 void emordem(struct no *n, struct no *raiz){
 	if(n == NULL)
 		return;
 	emordem(n->esq, raiz);
-	printf("%d,%d\n", n->chave, altura(raiz) - altura(n));
+	printf("%d,%d\n", n->chave, nivelNo (raiz, n->chave));
 	emordem(n->dir, raiz);
 }
+
+
+void destroiArvore(struct no *n) {
+    if(n->esq)
+        destroiArvore(n->esq);
+    if(n->dir)
+        destroiArvore(n->dir);
+    free(n);
+}
+
+
 /******************************************Main********************************************/
 int main(){
 	struct no *n = NULL;
@@ -232,5 +240,6 @@ int main(){
 		}
 	}
 	emordem (n, n);
+	destroiArvore (n);
 	return 0;
 }
