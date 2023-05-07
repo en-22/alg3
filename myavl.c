@@ -10,7 +10,7 @@ int main(){
 		scanf(" %c %d", &opcao, &chave);
 		switch (opcao){
 			case 'i':
-				n = inclui_folha (n, chave);
+				n = inclui (n, chave);
 			break;
 			case 'r':
 				n = exclui (n, chave);
