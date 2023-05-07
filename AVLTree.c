@@ -90,7 +90,7 @@ void ajustaPai (struct no *no, struct no *novo){
 struct no *balanceia (struct no *n){
     int fator = fatorDeBalanceamento(n);
     if (fator < -1){
-        if (fatorDeBalanceamento(n->esq) >= 0){
+        if (fatorDeBalanceamento(n->esq) > 0){
             n->esq = rot_esq(n->esq);
             n = rot_dir(n);
         }
@@ -98,9 +98,9 @@ struct no *balanceia (struct no *n){
            n = rot_dir(n);
     }        
     else if (fator > 1){
-        if (fatorDeBalanceamento(n->dir) <= 0){
-                n->dir = rot_dir(n->dir);
-                n = rot_esq(n);
+        if (fatorDeBalanceamento(n->dir) < 0){
+            n->dir = rot_dir(n->dir);
+            n = rot_esq(n);
         }
         else
             n = rot_esq(n);
