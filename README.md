@@ -20,7 +20,7 @@ struct no{
 
 - Na exclusão, em especial, caso a chave seja encontrada, são testados os 3 casos possíveis: nó sem filhos, nó com 1 filho e nó com 2 filhos. No primeiro caso, o nó é removido e a função retorna NULL. No segundo caso, o nó é removido e substituído pelo seu filho. No último caso, a remoção é feita pelo antecessor, de tal forma que o nó a ser removido e seu antecessor trocam de chaves, e a função é então chamada recursivamente para o filho da esquerda. Dessa forma, a chave que se deseja remover é "empurrada" para baixo da árvore até chegar em um dos primeiros casos, facilitando a remoção.
 
-- O balanceamento da árvore é feito dentro das funções de inclusão e exclusão. A cada chamada recursiva dessas funções, é recalculada a altura do nó passado como argumento e chamada a seguinte função para balanceá-lo, onde o fator de balanceamento nada mais é que a altura da sub-árvore da esquerda menos a altura da direita e os algoritmos de rotação são os mesmos vistos em aula, com a adição do recálculo da altura dos nós rotacionados.
+- O balanceamento da árvore é feito dentro das funções de inclusão e exclusão. A cada chamada recursiva dessas funções, é recalculada a altura do nó passado como argumento e chamada a seguinte função para balanceá-lo, onde o fator de balanceamento nada mais é que a altura da sub-árvore da direita menos a altura da esquerda e os algoritmos de rotação são os mesmos vistos em aula, com a adição do recálculo da altura dos nós rotacionados.
 ```c
 struct no *balanceia (struct no *n){
     int fator = fatorDeBalanceamento(n);
