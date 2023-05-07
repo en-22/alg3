@@ -108,18 +108,18 @@ struct no *balanceia (struct no *n){
     return n;
 }
 
-struct no *inclui_folha (struct no *n, int chave){
+struct no *inclui (struct no *n, int chave){
 	if (!n){
 		n = cria_no(chave);
 		return n;
 	}
 
 	if (n->chave > chave){
-		n->esq = inclui_folha(n->esq, chave);
+		n->esq = inclui(n->esq, chave);
 		n->esq->pai = n;
 	}
 	else if (n->chave < chave){
-		n->dir = inclui_folha(n->dir, chave);
+		n->dir = inclui(n->dir, chave);
 		n->dir->pai = n;
 	}
 
