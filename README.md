@@ -25,7 +25,7 @@ struct no{
 struct no *balanceia (struct no *n){
     int fator = fatorDeBalanceamento(n);
     if (fator < -1){
-        if (fatorDeBalanceamento(n->esq) >= 0){
+        if (fatorDeBalanceamento(n->esq) > 0){
             n->esq = rot_esq(n->esq);
             n = rot_dir(n);
         }
@@ -33,7 +33,7 @@ struct no *balanceia (struct no *n){
            n = rot_dir(n);
     }        
     else if (fator > 1){
-        if (fatorDeBalanceamento(n->dir) <= 0){
+        if (fatorDeBalanceamento(n->dir) < 0){
                 n->dir = rot_dir(n->dir);
                 n = rot_esq(n);
         }
@@ -43,3 +43,6 @@ struct no *balanceia (struct no *n){
     return n;
 }
 ```
+- Há também funções secundárias que lidam com a alocação e desalocação de memória. Caso algum erro de alocação aconteça, o programa avisa o usuário e sai com código de erro 1. Ao final do programa, toda a memória alocada é liberada.
+
+- Por fim, o programa principal lê um caractere representando a instrução (i para inserção e r para remoção) e uma chave até o fim do "arquivo" (que no caso, é o stdin), e a cada leitura, testa qual a opção desejada e executa a operação correspondente. Caso um caractere inválido seja passado como argumento, o usuário é avisado no stderr e o programa sai com código 1.
