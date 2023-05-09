@@ -1,23 +1,18 @@
-CFLAGS = -Wall -g # flags de compilacao
-LDFLAGS = -lm
+CFLAGS = -Wall -g
 
-CC = gcc
+all: myavl
 
-# arquivos-objeto
-    objects = AVLTree.o myavl.o
+myavl: myavl.o AVLTree.o
+	gcc -o myavl myavl.o AVLTree.o
 
 myavl.o: myavl.c
-	$(CC) -c $(CFLAGS) myavl.c
+	gcc -c myavl.c $(CFLAGS)
 
-AVLTree.o: AVLTree.c
-	$(CC) -c $(CFLAGS) AVLTree.c
-
-all: AVLTree.o
-	$(CC) -o myavl myavl.o AVLTree.o $(LDFLAGS)
+AVLTree.o: AVLTree.c AVLTree.h
+	gcc -c AVLTree.c $(CFLAGS)
 
 clean:
-	rm -f $(objects) *~
+	-rm *.o
 
-purge: clean
-	rm -f myavl
-
+purge:
+	-rm *.o myavl

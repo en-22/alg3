@@ -76,17 +76,6 @@ struct no *max (struct no *no){
     return max(no->dir);
 }
 
-void ajustaPai (struct no *no, struct no *novo){
-    if (no->pai != NULL){
-        if (no->pai->esq == no)
-            no->pai->esq = novo;
-        else
-            no->pai->dir = novo;
-        if (novo)
-            novo->pai = no->pai;
-    }
-}
-
 struct no *balanceia (struct no *n){
     int fator = fatorDeBalanceamento(n);
     if (fator < -1){
@@ -180,7 +169,6 @@ void imprime_arvore (struct no *n, int espaco){
 	imprime_arvore(n->esq, espaco);
 }
 
-
 void emordem (struct no *n, struct no *raiz){
 	if (!n)
 		return;
@@ -190,7 +178,6 @@ void emordem (struct no *n, struct no *raiz){
 	emordem(n->dir, raiz);
 }
 
-
 void destroiArvore(struct no *n){
     if (n->esq != NULL)
         destroiArvore(n->esq);
@@ -198,5 +185,3 @@ void destroiArvore(struct no *n){
         destroiArvore(n->dir);
     free(n);
 }
-
-
