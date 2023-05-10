@@ -14,15 +14,6 @@ struct no *cria_no (int chave){
 	return n;
 }
 
-int nivelNo (struct no* raiz, int chave){
-    int nivel = -1; 
-    if (!raiz)
-        return -1;
-    if ((raiz->chave == chave) || (nivel = nivelNo(raiz->esq, chave)) >= 0 || (nivel = nivelNo(raiz->dir, chave)) >= 0)
-        return nivel + 1;
-    return nivel;
-}
-
 int maior (int a, int b){
     return (a > b)? a : b;
 }
@@ -169,13 +160,12 @@ void imprime_arvore (struct no *n, int espaco){
 	imprime_arvore(n->esq, espaco);
 }
 
-void emordem (struct no *n, struct no *raiz){
+void emordem (struct no *n, int nivel){
 	if (!n)
 		return;
-
-	emordem(n->esq, raiz);
-	printf("%d,%d\n", n->chave, nivelNo (raiz, n->chave));
-	emordem(n->dir, raiz);
+	emordem(n->esq, nivel + 1);
+	printf("%d,%d\n", n->chave, nivel);
+	emordem(n->dir, nivel + 1);
 }
 
 void destroiArvore(struct no *n){

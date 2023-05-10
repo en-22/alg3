@@ -20,7 +20,7 @@ int main(){
 				exit(1);
 		}
 	}
-	emordem (n, n);
+	emordem (n, 0);
 	destroiArvore (n);
 	return 0;
 }
