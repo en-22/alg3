@@ -9,19 +9,19 @@ O objetivo do trabalho é implementar uma árvore do tipo AVL (Adelson-Velsky La
 ### Implementação
 
 - A árvore foi implementada com uma estrutura de nó que contém uma chave (int), ponteiros para o pai e para os filhos esquerdo e direito, e sua altura, conforme a ilustração abaixo:
-```c
+
 struct no{
 	int chave;
 	int altura;
 	struct no *esq, *dir, *pai;
 };
-```
+
 - Ambos os algoritmos de inclusão e exclusão possuem a mesma recursão que a busca binária de árvores para encontrar qual chave deve incluir ou excluir: caso a chave desejada seja maior que a chave do nó, a função é chamada recursivamente para o filho da direita, caso seja menor, é chamada para o filho da esquerda, até chegar no local desejado.
 
 - Na exclusão, em especial, caso a chave seja encontrada, são testados os 3 casos possíveis: nó sem filhos, nó com 1 filho e nó com 2 filhos. No primeiro caso, o nó é removido e a função retorna NULL. No segundo caso, o nó é removido e substituído pelo seu filho. No último caso, a remoção é feita pelo antecessor, de tal forma que o nó a ser removido e seu antecessor trocam de chaves, e a função é então chamada recursivamente para o filho da esquerda. Dessa forma, a chave que se deseja remover é "empurrada" para baixo da árvore até chegar em um dos primeiros casos, facilitando a remoção.
 
-- O balanceamento da árvore é feito no final das funções de inclusão e exclusão. A cada chamada recursiva dessas funções, é recalculada a altura do nó passado como argumento e chamada a seguinte função para balanceá-lo, onde o fator de balanceamento nada mais é que a altura da sub-árvore da direita menos a altura da esquerda, e caso esse fator seja diferente de -1, 0 ou 1, a árvore precisará ser rebalanceada. Os algoritmos de rotação são os mesmos vistos em aula, com a adição do recálculo da altura dos nós rotacionados. A partir do fator, escolhe-se a partir de qual lado será feita a rotação da árvore, e a partir do fator do filho, sendo ele esquerdo ou direito, ele fará uma rotação se a subárvore estiver "profundamente balanceada" e duas se a subárvore estiver em "zigzag".
-```c
+- O balanceamento da árvore é feito no final das funções de inclusão e exclusão. A cada chamada recursiva dessas funções, é recalculada a altura do nó passado como argumento e chamada a seguinte função para balanceá-lo, onde o fator de balanceamento nada mais é que a altura da subárvore da direita menos a altura da esquerda, e caso esse fator seja diferente de -1, 0 ou 1, a árvore precisará ser rebalanceada. Os algoritmos de rotação são os mesmos vistos em aula, com a adição do cálculo da altura dos nós rotacionados. A partir do fator, escolhe-se a partir de qual lado será feita a rotação da árvore, e a partir do fator do filho, sendo ele esquerdo ou direito, ele fará uma rotação se a subárvore estiver "profundamente balanceada" e duas se a subárvore estiver em "zigzag".
+
 struct no *balanceia (struct no *n){
     int fator = fatorDeBalanceamento(n);
     if (fator < -1){
@@ -42,8 +42,8 @@ struct no *balanceia (struct no *n){
     }
     return n;
 }
-```
-- A função "imprime_arvore" imprime os nodos deixando claro quais são os pais e os filhos de cada nodo no formato de uma árvore.
+
+- A função "imprime_arvore" imprime os nodos deixando claro quais são os pais e os filhos de cada nodo no formato de uma árvore. A função foi utilizada para ajudar a visualizar a árvore e entender como balanceá-la.
 
 - A função "emordem" imprime as chaves dos nodos em ordem crescente por meio de recursão, junto aos seus níveis.
 
